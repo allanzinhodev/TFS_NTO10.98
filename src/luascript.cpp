@@ -3232,6 +3232,7 @@ void LuaScriptInterface::registerFunctions() {
 	registerMethod(L, "CreatureEvent", "onHealthChange", LuaScriptInterface::luaCreatureEventOnCallback);
 	registerMethod(L, "CreatureEvent", "onManaChange", LuaScriptInterface::luaCreatureEventOnCallback);
 	registerMethod(L, "CreatureEvent", "onExtendedOpcode", LuaScriptInterface::luaCreatureEventOnCallback);
+	registerMethod(L, "CreatureEvent", "onAttack", LuaScriptInterface::luaCreatureEventOnCallback);
 
 	// MoveEvent
 	registerClass(L, "MoveEvent", "", LuaScriptInterface::luaCreateMoveEvent);

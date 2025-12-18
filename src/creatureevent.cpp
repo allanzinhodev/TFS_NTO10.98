@@ -5,6 +5,7 @@
 
 #include "creatureevent.h"
 
+#include "creature.h"
 #include "item.h"
 #include "tools.h"
 
@@ -206,6 +207,8 @@ bool CreatureEvent::configureEvent(const pugi::xml_node& node) {
 		type = CREATURE_EVENT_MANACHANGE;
 	} else if (tmpStr == "extendedopcode") {
 		type = CREATURE_EVENT_EXTENDED_OPCODE;
+	} else if (tmpStr == "attack") {
+		type = CREATURE_EVENT_ATTACK;
 	} else {
 		std::cout << "[Error - CreatureEvent::configureEvent] Invalid type for creature event: " << eventName << std::endl;
 		return false;
@@ -256,6 +259,9 @@ std::string_view CreatureEvent::getScriptEventName() const {
 
 		case CREATURE_EVENT_EXTENDED_OPCODE:
 			return "onExtendedOpcode";
+
+		case CREATURE_EVENT_ATTACK:
+			return "onAttack";
 
 		case CREATURE_EVENT_NONE:
 		default:
@@ -608,4 +614,32 @@ void CreatureEvent::executeExtendedOpcode(Player* player, uint8_t opcode, const 
 	lua::pushString(L, buffer);
 
 	scriptInterface->callVoidFunction(3);
+}
+
+void CreatureEvent::executeOnAttack(Creature* creature, Creature* target) {
+	//onAttack(creature, target)
+	std::cout << "[onAttack] Player: " << creature->getName() << " attacking: " << (target ? target->getName() : "null") << std::endl;
+	
+	if (!lua::reserveScriptEnv()) {
+		std::cout << "[Error - CreatureEvent::executeOnAttack] Call stack overflow" << std::endl;
+		return;
+	}
+
+	ScriptEnvironment* env = lua::getScriptEnv();
+	env->setScriptId(scriptId, scriptInterface);
+
+	lua_State* L = scriptInterface->getLuaState();
+
+	scriptInterface->pushFunction(scriptId);
+	lua::pushUserdata(L, creature);
+	lua::setCreatureMetatable(L, -1, creature);
+	
+	if (target) {
+		lua::pushUserdata(L, target);
+		lua::setCreatureMetatable(L, -1, target);
+	} else {
+		lua_pushnil(L);
+	}
+	
+	scriptInterface->callVoidFunction(2);
 }

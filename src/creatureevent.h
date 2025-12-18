@@ -27,6 +27,7 @@ enum CreatureEventType_t {
 	CREATURE_EVENT_HEALTHCHANGE,
 	CREATURE_EVENT_MANACHANGE,
 	CREATURE_EVENT_EXTENDED_OPCODE, // otclient additional network opcodes
+	CREATURE_EVENT_ATTACK, // physical attack event
 };
 
 class CreatureEvent final : public Event {
@@ -71,6 +72,7 @@ class CreatureEvent final : public Event {
 		void executeHealthChange(Creature* creature, Creature* attacker, CombatDamage& damage);
 		void executeManaChange(Creature* creature, Creature* attacker, CombatDamage& damage);
 		void executeExtendedOpcode(Player* player, uint8_t opcode, const std::string& buffer);
+		void executeOnAttack(Creature* creature, Creature* target);
 		//
 
 	private:

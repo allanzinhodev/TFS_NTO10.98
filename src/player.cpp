@@ -3152,6 +3152,15 @@ void Player::doAttacking(uint32_t) {
 
 		if (result) {
 			lastAttack = OTSYS_TIME();
+			
+			std::cout << "[DEBUG] Player::doAttacking - Attack successful for: " << getName() << std::endl;
+			
+			// Fire onAttack event for attack animations
+			const auto& events = getCreatureEvents(CREATURE_EVENT_ATTACK);
+			std::cout << "[DEBUG] Number of onAttack events registered: " << events.size() << std::endl;
+			for (CreatureEvent* creatureEvent : events) {
+				creatureEvent->executeOnAttack(this, attackedCreature);
+			}
 		}
 	}
 }
